@@ -1,6 +1,26 @@
 server:
   port: 5000
 
+app:
+  external:
+    base-url: http://simulado:3001
+  service:
+    parallelism: 4
+    product-detail-timeout-ms: 2000
+
 spring:
-  application:
-    name: similar-product
+  main:
+    allow-bean-definition-overriding: true
+
+resilience4j:
+  retry:
+    instances:
+      productApi:
+        max-attempts: 3
+        wait-duration: 200ms
+  circuitbreaker:
+    instances:
+      productApi:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s

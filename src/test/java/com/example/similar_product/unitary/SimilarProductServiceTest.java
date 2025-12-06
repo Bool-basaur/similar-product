@@ -20,7 +20,7 @@ public class SimilarProductServiceTest {
     @BeforeEach
     void setup() {
         api = Mockito.mock(ProductPort.class);
-        service = new SimilarProductServiceImpl(api); // FIX
+        service = new SimilarProductServiceImpl(api);
     }
 
     @Test

@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  similar-product:
+    build: .
+    container_name: similar-product
+    ports:
+      - "5000:5000"
+    environment:
+      - MOCK_API_URL=http://simulado:3001
+    depends_on:
+      - simulado
+
+  simulado:
+    image: devopsfaith/simulado:latest
+    container_name: simulado
+    ports:
+      - "3001:3001"
+
+  influxdb:
+    image: influxdb:1.8
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+
+  k6:
+    image: grafana/k6
+    container_name: k6
+    volumes:
+      - ./scripts:/scripts
