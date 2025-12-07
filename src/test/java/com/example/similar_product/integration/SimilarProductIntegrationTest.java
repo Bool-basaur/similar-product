@@ -1,39 +1,59 @@
 package com.example.similar_product.integration;
 
+
 import com.example.similar_product.SimilarProductApplication;
-import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
-@SpringBootTest(classes = SimilarProductApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@WireMockTest(httpPort = 3001)
+
+
+@SpringBootTest(
+        classes = SimilarProductApplication.class,
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+)
 class SimilarProductIntegrationTest {
+
+    private static MockWebServer mockServer;
+
+    @DynamicPropertySource
+    static void props(DynamicPropertyRegistry registry) throws Exception {
+        if (mockServer == null) {
+            mockServer = new MockWebServer();
+            mockServer.start();
+        }
+        registry.add("app.external.base-url",
+                () -> mockServer.url("/").toString());
+    }
 
     @Autowired
     private WebTestClient client;
 
     @Test
     void fullFlow() {
+        mockServer.enqueue(new MockResponse()
+                .setBody("[\"2\",\"3\"]")
+                .addHeader("Content-Type", "application/json"));
 
-        stubFor(get(urlEqualTo("/product/1/similarids"))
-                .willReturn(okJson("[\"2\",\"3\"]")));
+        mockServer.enqueue(new MockResponse()
+                .setBody("{\"id\":\"2\",\"name\":\"p2\",\"price\":10,\"availability\":true}")
+                .addHeader("Content-Type", "application/json"));
 
-        stubFor(get(urlEqualTo("/product/2"))
-                .willReturn(okJson("{\"id\":\"2\",\"name\":\"p2\",\"price\":10.0,\"availability\":true}")));
-
-        stubFor(get(urlEqualTo("/product/3"))
-                .willReturn(okJson("{\"id\":\"3\",\"name\":\"p3\",\"price\":20.0,\"availability\":false}")));
+        mockServer.enqueue(new MockResponse()
+                .setBody("{\"id\":\"3\",\"name\":\"p3\",\"price\":20,\"availability\":false}")
+                .addHeader("Content-Type", "application/json"));
 
         client.get()
                 .uri("/product/1/similar")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$[0].id")
-                .isEqualTo("2");
+                .jsonPath("$[0].id").isEqualTo("2");
     }
 }

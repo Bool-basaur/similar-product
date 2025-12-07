@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-class SimilarProductControllerTest {
+public class SimilarProductControllerTest {
 
     @Test
     void shouldReturn200() {

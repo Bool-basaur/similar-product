@@ -3,7 +3,7 @@ server:
 
 app:
   external:
-    base-url: http://simulado:3001
+    base-url: ${MOCK_API_URL:http://localhost:3001}
   service:
     parallelism: 4
     product-detail-timeout-ms: 2000
