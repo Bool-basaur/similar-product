@@ -1,8 +1,6 @@
 package com.example.similar_product.adapter.in.rest.controller;
 
 import com.example.similar_product.adapter.in.rest.exception.ProductNotFoundException;
-import com.example.similar_product.adapter.in.rest.util.ProductIdNormalizer;
-import com.example.similar_product.domain.model.ProductDetail;
 import com.example.similar_product.service.SimilarProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +11,6 @@ import reactor.core.publisher.Mono;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 
 @RestController
@@ -21,10 +18,8 @@ import java.util.List;
 public class SimilarProductController {
     private final SimilarProductService service;
 
-    private final ProductIdNormalizer normalizer;
-    public SimilarProductController(SimilarProductService service, ProductIdNormalizer normalizer) {
+    public SimilarProductController(SimilarProductService service) {
         this.service = service;
-        this.normalizer = normalizer;
     }
 
     @GetMapping("/{productId}/similar")

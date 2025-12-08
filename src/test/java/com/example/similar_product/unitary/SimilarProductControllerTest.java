@@ -16,7 +16,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @WebFluxTest(SimilarProductController.class)
-public class SimilarProductControllerTest {
+class SimilarProductControllerTest {
 
     @Autowired
     private WebTestClient client;
