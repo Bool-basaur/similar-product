@@ -37,18 +37,19 @@ jobs:
       - name: Build and push GHCR
         id: build
         run: |
-          IMAGE=ghcr.io/${{ github.repository_owner }}/similar-product
+          OWNER=${{ github.repository_owner,, }}
+          IMAGE=ghcr.io/$OWNER/similar-product
           TAG=${{ github.sha }}
-
+          
           docker build -t $IMAGE:$TAG .
-
           docker push $IMAGE:$TAG
-
+          
           echo "image=$IMAGE:$TAG" >> $GITHUB_OUTPUT
+
 
       - name: Set output image
         id: set-image
-        run: echo "image=ghcr.io/${{ github.repository_owner }}/similar-product:${{ github.sha }}" >> $GITHUB_OUTPUT
+        run: echo "image=ghcr.io/${{ github.repository_owner,, }}/similar-product:${{ github.sha }}" >> $GITHUB_OUTPUT
 
 
   smoke:
