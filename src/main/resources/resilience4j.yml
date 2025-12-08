@@ -1,0 +1,17 @@
+resilience4j:
+  circuitbreaker:
+    instances:
+      productApi:
+        register-health-indicator: true
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+  retry:
+    instances:
+      productApi:
+        max-attempts: 3
+        wait-duration: 200ms
+  timelimiter:
+    instances:
+      productApi:
+        timeout-duration: 2s
