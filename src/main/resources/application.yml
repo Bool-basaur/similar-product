@@ -1,16 +1,23 @@
 server:
   port: 5000
 
+logging:
+  level:
+    root: INFO
+    org.springframework.web: WARN
+    reactor.netty: WARN
+
 app:
-  external:
-    base-url: ${MOCK_API_URL:http://localhost:3001}
   service:
     parallelism: 4
-    product-detail-timeout-ms: 2000
+    detail-timeout-ms: 2000
+
+  external:
+    base-url: ${EXTERNAL_BASE_URL:http://localhost:3001}
 
 spring:
-  main:
-    allow-bean-definition-overriding: true
+  webflux:
+    base-path: /
 
 resilience4j:
   retry:
@@ -18,9 +25,10 @@ resilience4j:
       productApi:
         max-attempts: 3
         wait-duration: 200ms
+
   circuitbreaker:
     instances:
       productApi:
-        slidingWindowSize: 10
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
+        sliding-window-size: 20
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s

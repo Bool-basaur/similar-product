@@ -7,6 +7,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -18,7 +19,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
         classes = SimilarProductApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
-class SimilarProductIntegrationTest {
+public class SimilarProductIntegrationTest {
+
+    @LocalServerPort
+    int port;
 
     private static MockWebServer mockServer;
 

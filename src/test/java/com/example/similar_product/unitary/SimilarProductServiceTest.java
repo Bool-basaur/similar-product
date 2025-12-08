@@ -26,7 +26,7 @@ public class SimilarProductServiceTest {
 
     @Test
     void whenPrimaryNotFound_thenReturnEmpty() {
-        // Antes: Mono.empty() provocaba maxConcurrency=0 → AHORA devuelves lista vacía
+
         Mockito.when(api.getSimilarProductIds("1"))
                 .thenReturn(Mono.just(List.of()));
 
@@ -43,7 +43,7 @@ public class SimilarProductServiceTest {
         Mockito.when(api.getProductDetail("2"))
                 .thenReturn(Mono.just(new ProductDetail("2", "p2", 10, true)));
 
-        // Simulamos que el producto 3 falla → el servicio debe ignorarlo
+
         Mockito.when(api.getProductDetail("3"))
                 .thenReturn(Mono.error(new RuntimeException("Boom")));
 
@@ -80,7 +80,7 @@ public class SimilarProductServiceTest {
         Mockito.when(api.getSimilarProductIds("1"))
                 .thenReturn(Mono.just(List.of("2")));
 
-        // Simula operación colgándose
+
         Mockito.when(api.getProductDetail("2"))
                 .thenReturn(Mono.never());
 

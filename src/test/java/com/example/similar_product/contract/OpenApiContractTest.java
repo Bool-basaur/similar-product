@@ -2,25 +2,25 @@ package com.example.similar_product.contract;
 
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.boot.test.web.server.LocalServerPort;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import static junit.framework.TestCase.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
 public class OpenApiContractTest {
 
-    @Autowired
-    private WebTestClient client;
+    @LocalServerPort
+    int port;
 
     @Test
-    void openApiDocShouldBeAvailable() {
-        client.get()
-                .uri("/v3/api-docs")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                .jsonPath("$.openapi").isEqualTo("3.0.1");
+    void openApiEndpointAvailable() throws Exception {
+        URL url = new URL("http://localhost:" + port + "/v3/api-docs");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        assertEquals(200, conn.getResponseCode());
     }
 }

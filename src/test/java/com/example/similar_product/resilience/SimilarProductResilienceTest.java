@@ -1,47 +1,49 @@
 package com.example.similar_product.resilience;
 
-
-import com.example.similar_product.adapter.out.http.ProductHttpAdapter;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.*;
-import org.springframework.web.reactive.function.client.WebClient;
+import com.example.similar_product.port.ProductPort;
+import com.example.similar_product.service.SimilarProductService;
+import com.example.similar_product.service.impl.SimilarProductServiceImpl;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.List;
 
 public class SimilarProductResilienceTest {
 
-    private MockWebServer mockServer;
-    private ProductHttpAdapter adapter;
+    @Test
+    void timeoutSkipsProduct() {
+        ProductPort port = Mockito.mock(ProductPort.class);
 
-    @BeforeEach
-    void setup() throws Exception {
-        mockServer = new MockWebServer();
-        mockServer.start();
+        Mockito.when(port.getSimilarProductIds("1"))
+                .thenReturn(Mono.just(List.of("2")));
 
-        String baseUrl = mockServer.url("/").toString();
+        Mockito.when(port.getProductDetail("2"))
+                .thenReturn(Mono.never());
 
-        adapter = new ProductHttpAdapter(
-                WebClient.builder(),
-                baseUrl
-        );
-    }
+        SimilarProductService service =
+                new SimilarProductServiceImpl(port, 3, 200);
 
-    @AfterEach
-    void teardown() throws Exception {
-        mockServer.shutdown();
+        StepVerifier.create(service.getSimilarProducts("1"))
+                .expectNext(List.of())
+                .verifyComplete();
     }
 
     @Test
-    void whenBackendReturns500_thenFallbackToEmptyList() {
-        mockServer.enqueue(
-                new MockResponse()
-                        .setResponseCode(500)
-                        .setBody("server error")
-        );
+    void errorSkipsProduct() {
+        ProductPort port = Mockito.mock(ProductPort.class);
 
-        StepVerifier.create(adapter.getSimilarProductIds("1"))
+        Mockito.when(port.getSimilarProductIds("1"))
+                .thenReturn(Mono.just(List.of("2")));
+
+        Mockito.when(port.getProductDetail("2"))
+                .thenReturn(Mono.error(new RuntimeException("boom")));
+
+        SimilarProductService service =
+                new SimilarProductServiceImpl(port, 3, 200);
+
+        StepVerifier.create(service.getSimilarProducts("1"))
                 .expectNext(List.of())
                 .verifyComplete();
     }

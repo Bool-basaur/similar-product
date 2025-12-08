@@ -28,8 +28,8 @@ jobs:
       - name: Install Maven Dependencies
         run: mvn -B dependency:resolve
 
-      - name: Run Tests
-        run: mvn -B clean verify
+      - name: Run Tests and static analysis
+        run: mvn -B -DskipTests=false clean verify checkstyle:check spotbugs:check
 
       - name: Login GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
