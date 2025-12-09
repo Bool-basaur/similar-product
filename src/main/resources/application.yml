@@ -8,17 +8,16 @@ logging:
     reactor.netty: WARN
 
 spring:
-  aop:
-    proxy-target-class: true
   webflux:
     base-path: /
 
 app:
+  external:
+    base-url: ${EXTERNAL_BASE_URL:http://localhost:3001}
+
   service:
     parallelism: 4
     detail-timeout-ms: 2000
-  external:
-    base-url: ${EXTERNAL_BASE_URL:http://localhost:3001}
 
 management:
   endpoints:

@@ -2,9 +2,9 @@ name: Build, test and push
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, dev ]
 
 permissions:
   contents: read
@@ -62,15 +62,29 @@ jobs:
     needs: build-and-push
 
     steps:
-      - name: Pull and run image
+      - name: Pull image
+        run: docker pull ${{ needs.build-and-push.outputs.image }}
+
+      - name: Run container
         run: |
-          docker pull ${{ needs.build-and-push.outputs.image }}
           docker run -d \
-          --name app \
-          -e APP_EXTERNAL_BASE_URL=http://localhost \
-          -p 5000:5000 \
-          ${{ needs.build-and-push.outputs.image }}
+            --name app \
+            -e EXTERNAL_BASE_URL=http://localhost:9999 \
+            -p 5000:5000 \
+            ${{ needs.build-and-push.outputs.image }}
           sleep 8
 
-      - name: Health check
-        run: curl -f http://localhost:5000/actuator/health
+      - name: Health check with retry
+        run: |
+          for i in {1..10}; do
+            if curl -f http://localhost:5000/actuator/health; then
+              echo "App is healthy!"
+              exit 0
+            fi
+            echo "Retry $i/10: App not ready yet..."
+            sleep 2
+          done
+
+          echo "ERROR: App failed healthcheck"
+          docker logs app
+          exit 1
