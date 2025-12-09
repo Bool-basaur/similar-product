@@ -12,6 +12,15 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.List;
 
+/**
+ * =============================================================================
+ * @Class: SimilarProductServiceImpl
+ * @Layer: Service Implementation
+ * @Description: Implements the logic to fetch similar products
+ * =============================================================================
+ * @Author: Alex Jiménez Fernández
+ * =============================================================================
+ */
 public class SimilarProductServiceImpl implements SimilarProductService {
 
     private static final Logger log = LoggerFactory.getLogger(SimilarProductServiceImpl.class);

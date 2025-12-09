@@ -14,6 +14,16 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.List;
 
+/**
+ * =============================================================================
+ * @Class: ProductHttpAdapter
+ * @Layer: Outbound Adapter (REST)
+ * @Description: Connects to the external Product API using WebClient.
+ *  *               Fetches similar product IDs and detailed information for a
+ *  *               product. Provides default error-handling and timeouts.
+ * =============================================================================
+ * @Author Alex Jiménez Fernández
+ **/
 public class ProductHttpAdapter implements ProductPort {
 
     private static final Logger log = LoggerFactory.getLogger(ProductHttpAdapter.class);
@@ -33,6 +43,15 @@ public class ProductHttpAdapter implements ProductPort {
         this.timeout = Duration.ofMillis(timeoutMillis);
     }
 
+
+
+
+    /**
+     * Retrieves a list of similar product IDs from the external API.
+     *
+     * @param productId product identifier
+     * @return list of strings representing similar product IDs
+     */
     @Override
     @CircuitBreaker(name = CB_NAME)
     @Retry(name = CB_NAME)
@@ -62,6 +81,13 @@ public class ProductHttpAdapter implements ProductPort {
                 });
     }
 
+
+    /**
+     * Retrieves the detail of one product from the external API.
+     *
+     * @param productId product identifier
+     * @return Mono of ProductDetail, empty on 404
+     */
     @Override
     @CircuitBreaker(name = CB_NAME)
     @Retry(name = CB_NAME)
