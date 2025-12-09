@@ -7,8 +7,11 @@ services:
       - "5000:5000"
     environment:
       EXTERNAL_BASE_URL: "http://mock-server:3001"
+    depends_on:
+      - mock-server
 
   mock-server:
     image: wiremock/wiremock
+    container_name: mock-server
     ports:
       - "3001:8080"
