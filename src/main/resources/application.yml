@@ -17,6 +17,6 @@ app:
   service:
     parallelism: 4
     detail-timeout-ms: 2000
+  external:
+    base-url: ${EXTERNAL_BASE_URL:http://localhost:3001}
 
-external:
-  base-url: ${EXTERNAL_BASE_URL:http://localhost:3001}
