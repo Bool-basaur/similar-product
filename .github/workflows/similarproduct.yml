@@ -37,7 +37,9 @@ jobs:
       - name: Build and push GHCR
         id: build
         run: |
-          OWNER=${{ github.repository_owner,, }}
+          # Make owner lowercase (shell-side), because GitHub expression lowercase isn't supported
+          OWNER="${{ github.repository_owner }}"
+          OWNER="$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')"
           IMAGE=ghcr.io/$OWNER/similar-product
           TAG=${{ github.sha }}
           
@@ -46,10 +48,12 @@ jobs:
           
           echo "image=$IMAGE:$TAG" >> $GITHUB_OUTPUT
 
-
       - name: Set output image
         id: set-image
-        run: echo "image=ghcr.io/${{ github.repository_owner,, }}/similar-product:${{ github.sha }}" >> $GITHUB_OUTPUT
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          OWNER="$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')"
+          echo "image=ghcr.io/$OWNER/similar-product:${{ github.sha }}" >> $GITHUB_OUTPUT
 
 
   smoke:
