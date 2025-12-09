@@ -7,28 +7,23 @@ logging:
     org.springframework.web: WARN
     reactor.netty: WARN
 
-app:
-  service:
-    parallelism: 4
-    detail-timeout-ms: 2000
-
-  external:
-    base-url: ${EXTERNAL_BASE_URL:http://localhost:3001}
-
 spring:
   webflux:
     base-path: /
 
-resilience4j:
-  retry:
-    instances:
-      productApi:
-        max-attempts: 3
-        wait-duration: 200ms
+app:
+  external:
+    base-url: ${EXTERNAL_BASE_URL:http://localhost:3001}
 
-  circuitbreaker:
-    instances:
-      productApi:
-        sliding-window-size: 20
-        failure-rate-threshold: 50
-        wait-duration-in-open-state: 10s
+  service:
+    parallelism: 4
+    detail-timeout-ms: 2000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always

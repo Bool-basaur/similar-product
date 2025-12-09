@@ -1,10 +1,10 @@
-name: Build, Test and Push
+name: Build, test and push
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, dev ]
 
 permissions:
   contents: read
@@ -31,37 +31,58 @@ jobs:
       - name: Run Tests and static analysis
         run: mvn -B -DskipTests=false clean verify checkstyle:check spotbugs:check
 
+      - name: Build JAR
+        run: mvn -B -DskipTests clean package spring-boot:repackage
+
       - name: Login GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build and push GHCR
         id: build
         run: |
-          OWNER=${{ github.repository_owner,, }}
+          OWNER="${{ github.repository_owner }}"
+          OWNER="$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')"
           IMAGE=ghcr.io/$OWNER/similar-product
           TAG=${{ github.sha }}
-          
+
           docker build -t $IMAGE:$TAG .
           docker push $IMAGE:$TAG
-          
-          echo "image=$IMAGE:$TAG" >> $GITHUB_OUTPUT
 
+          echo "image=$IMAGE:$TAG" >> $GITHUB_OUTPUT
 
       - name: Set output image
         id: set-image
-        run: echo "image=ghcr.io/${{ github.repository_owner,, }}/similar-product:${{ github.sha }}" >> $GITHUB_OUTPUT
-
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          OWNER="$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')"
+          echo "image=ghcr.io/$OWNER/similar-product:${{ github.sha }}" >> $GITHUB_OUTPUT
 
   smoke:
     runs-on: ubuntu-latest
     needs: build-and-push
 
     steps:
-      - name: Pull and run image
-        run: |
-          docker pull ${{ needs.build-and-push.outputs.image }}
-          docker run -d --name app -p 5000:5000 ${{ needs.build-and-push.outputs.image }}
-          sleep 8
+      - name: Pull image
+        run: docker pull ${{ needs.build-and-push.outputs.image }}
 
-      - name: Health check
-        run: curl -f http://localhost:5000/actuator/health
+      - name: Run container
+        run: |
+          docker run -d \
+          --name app \
+          -e EXTERNAL_BASE_URL=http://localhost:9999 \
+          -p 5000:5000 \
+          ${{ needs.build-and-push.outputs.image }}
+      - name: Health check with retry
+        run: |
+          for i in {1..10}; do
+            if curl -f http://localhost:5000/actuator/health; then
+              echo "App is healthy!"
+              exit 0
+            fi
+            echo "Retry $i/10: App not ready yet..."
+            sleep 2
+          done
+
+          echo "ERROR: App failed healthcheck"
+          docker logs app
+          exit 1
