@@ -12,10 +12,12 @@ services:
       - simulado
 
   simulado:
-    image: devopsfaith/simulado:latest
+    image: wiremock/wiremock:latest
     container_name: simulado
     ports:
-      - "3001:3001"
+      - "3001:8080"
+    volumes:
+      - ./wiremock:/home/wiremock
 
   influxdb:
     image: influxdb:1.8
