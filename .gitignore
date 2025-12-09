@@ -1,4 +1,3 @@
-README.md
 /target
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -36,4 +35,3 @@ build/
 /.DS_Store
 .env
 .gradle
-docker-compose.override.yml
