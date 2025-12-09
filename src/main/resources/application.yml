@@ -20,7 +20,3 @@ app:
 
   external:
     base-url: ${EXTERNAL_BASE_URL:http://localhost:3001}
-
-spring:
-  webflux:
-    base-path: /
