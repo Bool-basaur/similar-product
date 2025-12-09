@@ -1,18 +1,14 @@
 version: "3.9"
 
 services:
-
-  mock-api:
-    image: wiremock/wiremock:3.4
-    ports:
-      - "3001:8080"
-    container_name: mock-api
-
   similar-product:
     build: .
     ports:
       - "5000:5000"
     environment:
-      - MOCK_API_URL=http://mock-api:8080
-    depends_on:
-      - mock-api
+      EXTERNAL_BASE_URL: "http://mock-server:3001"
+
+  mock-server:
+    image: wiremock/wiremock
+    ports:
+      - "3001:8080"
