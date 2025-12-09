@@ -7,6 +7,12 @@ logging:
     org.springframework.web: WARN
     reactor.netty: WARN
 
+spring:
+  aop:
+    proxy-target-class: true
+  webflux:
+    base-path: /
+
 app:
   service:
     parallelism: 4
