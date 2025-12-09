@@ -1,5 +1,5 @@
 APP_NAME=similar-product
-JAR_PATH=target/$(APP_NAME).jar
+JAR_PATH=target/app.jar
 IMAGE_NAME=$(APP_NAME)
 PORT=5000
 
