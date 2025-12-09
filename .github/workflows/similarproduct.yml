@@ -31,21 +31,23 @@ jobs:
       - name: Run Tests and static analysis
         run: mvn -B -DskipTests=false clean verify checkstyle:check spotbugs:check
 
+      - name: Build JAR
+        run: mvn -B -DskipTests package
+
       - name: Login GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build and push GHCR
         id: build
         run: |
-          # Make owner lowercase (shell-side), because GitHub expression lowercase isn't supported
           OWNER="${{ github.repository_owner }}"
           OWNER="$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')"
           IMAGE=ghcr.io/$OWNER/similar-product
           TAG=${{ github.sha }}
-          
+
           docker build -t $IMAGE:$TAG .
           docker push $IMAGE:$TAG
-          
+
           echo "image=$IMAGE:$TAG" >> $GITHUB_OUTPUT
 
       - name: Set output image
@@ -54,7 +56,6 @@ jobs:
           OWNER="${{ github.repository_owner }}"
           OWNER="$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')"
           echo "image=ghcr.io/$OWNER/similar-product:${{ github.sha }}" >> $GITHUB_OUTPUT
-
 
   smoke:
     runs-on: ubuntu-latest
