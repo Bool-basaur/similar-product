@@ -8,8 +8,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * =============================================================================
+ * @Class: AppConfig
+ * @Layer: Configuration
+ * @Description: Defines Spring beans wiring the outbound adapter (HTTP) with
+ *               the domain services
+ * =============================================================================
+ * @Author: Alex Jiménez Fernández
+ * =============================================================================
+ */
 @Configuration
 public class AppConfig {
+
+    /**
+     * Creates the ProductPort implementation (HTTP Adapter).
+     */
     @Bean
     public ProductPort productPort(
             @Value("${app.external.base-url}") String baseUrl,
@@ -18,6 +32,9 @@ public class AppConfig {
         return new ProductHttpAdapter(baseUrl, timeout);
     }
 
+    /**
+     * Creates the SimilarProductService implementation.
+     */
     @Bean
     public SimilarProductService similarProductService(
             ProductPort productPort,

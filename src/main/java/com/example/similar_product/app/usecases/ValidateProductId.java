@@ -6,9 +6,27 @@ import java.nio.charset.StandardCharsets;
 import com.example.similar_product.adapter.in.rest.exception.InvalidProductIdException;
 import org.springframework.stereotype.Component;
 
+/**
+ * =============================================================================
+ * @Class: ValidateProductId
+ * @Layer: Use Case
+ * @Description: Validates, decodes and sanitizes product identifiers coming
+ *               from the REST layer before passing them into the domain/service.
+ *               Ensures the productId is not null, not blank, and safe to use.
+ * =============================================================================
+ * @Author: Alex Jiménez Fernández
+ * =============================================================================
+ */
 @Component
 public class ValidateProductId {
 
+    /**
+     * Validates and normalizes the incoming productId.
+     *
+     * @param raw raw productId from HTTP path
+     * @return valid productId
+     * @throws InvalidProductIdException if the ID is null or blank
+     */
     public String validate(String raw) {
 
         if (raw == null) {
