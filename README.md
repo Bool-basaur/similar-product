@@ -36,10 +36,10 @@ Esta aplicación es un servicio (desarrollado con arquitectura hexagonal) que ex
 
 Códigos de respuesta:
 
-- `200` : Devuelve la lista de similares.
-- `204` : El producto existe, pero no tiene similares.
-- `400` :	El productId es inválido (está vacío, o mal formado).
-- `404` :	El producto no existe.
+- `200` : Devuelve la lista de productos similares.
+- `204` : El producto existe, pero no tiene productos similares.
+- `400` : El productId es inválido (está vacío, o mal formado).
+- `404` : El producto no existe.
 
 
 ## Resiliencia
